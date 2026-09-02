@@ -3,13 +3,12 @@ plugins {
 }
 
 android {
-    namespace 'org.fhwifi'
-    compileSdk 34
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId "org.fhwifi"
-        minSdk 24
-        targetSdk 34
+        minSdkVersion 24
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
     }
