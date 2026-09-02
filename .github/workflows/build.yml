@@ -18,18 +18,21 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: |
+          set -o pipefail
+          ./gradlew assembleDebug --stacktrace 2>&1 | tee /tmp/gradle.log; EXIT=${PIPESTATUS[0]}
+          echo "=== LAST 100 LINES ==="
+          tail -100 /tmp/gradle.log
+          echo "=== EXIT CODE: $EXIT ==="
+          exit $EXIT
 
       - name: Find APK
-        run: |
-          echo "=== Searching for APK ==="
-          find . -name "*.apk" 2>/dev/null
-          echo "=== app/build/outputs ==="
-          find app/build/outputs -type f 2>/dev/null || echo "No outputs dir"
+        if: always()
+        run: find . -name "*.apk" 2>/dev/null && echo "---" && find app/build -type f -name "*.apk" 2>/dev/null || echo "No APK"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: FHWifi-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
