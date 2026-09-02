@@ -18,22 +18,11 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace > /tmp/gradle.log 2>&1 || true
+        run: ./gradlew assembleDebug
 
-      - name: Show last 150 lines of log
-        run: tail -150 /tmp/gradle.log
-
-      - name: Upload build log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: /tmp/gradle.log
-
-      - name: Upload APK if exists
-        if: always()
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: FHWifi-APK
-          path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: warn
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
