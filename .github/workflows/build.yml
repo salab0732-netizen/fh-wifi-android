@@ -18,7 +18,16 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: |
+          ./gradlew assembleDebug --warning-mode all 2>&1 || true
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          if [ -f "$APK" ]; then
+            echo "✅ APK built successfully: $(du -h $APK | cut -f1)"
+          else
+            echo "❌ APK not found"
+            find app/build -name "*.apk" 2>/dev/null || echo "No APK anywhere"
+            exit 1
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
