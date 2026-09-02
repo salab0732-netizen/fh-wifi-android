@@ -8,30 +8,21 @@ jobs:
 
       - uses: actions/setup-java@v4
         with:
-          distribution: temurin
+          distribution: "temurin"
           java-version: "17"
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      - name: Generate real Gradle wrapper (8.4)
+        run: gradle wrapper --gradle-version 8.4
 
       - name: Build Debug APK
-        run: |
-          ./gradlew assembleDebug --warning-mode all 2>&1 || true
-          APK="app/build/outputs/apk/debug/app-debug.apk"
-          if [ -f "$APK" ]; then
-            echo "✅ APK built successfully: $(du -h $APK | cut -f1)"
-          else
-            echo "❌ APK not found"
-            find app/build -name "*.apk" 2>/dev/null || echo "No APK anywhere"
-            exit 1
-          fi
+        run: ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: FHWifi-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
